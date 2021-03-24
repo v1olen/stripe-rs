@@ -230,6 +230,7 @@ pub enum EventObject {
     Refund(Refund),
     Review(Review),
     Sku(Sku),
+    Source(Source),
     Subscription(Subscription),
     Transfer(Transfer),
 }
