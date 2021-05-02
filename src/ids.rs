@@ -123,14 +123,26 @@ macro_rules! def_id {
         impl $struct_name {
             /// The prefix of the id type (e.g. `cus_` for a `CustomerId`).
             #[inline(always)]
+            #[deprecated(note = "Please use prefixes or is_valid_prefix")]
             pub fn prefix() -> &'static str {
                 $prefix
+            }
+
+            /// The valid prefixes of the id type (e.g. [`ch_`, `py_`\ for a `ChargeId`).
+            #[inline(always)]
+            pub fn prefixes() -> &'static [&'static str] {
+                &[$prefix$(, $alt_prefix)*]
             }
 
             /// Extracts a string slice containing the entire id.
             #[inline(always)]
             pub fn as_str(&self) -> &str {
                 self.0.as_str()
+            }
+
+            /// Check is provided prefix would be a valid prefix for id's of this type
+            pub fn is_valid_prefix(prefix: &str) -> bool {
+                prefix == $prefix $( || prefix == $alt_prefix )*
             }
         }
 
@@ -280,7 +292,7 @@ macro_rules! def_id {
                     })?;
 
                 match prefix {
-                    $(_ if prefix == $($variant_type)*::prefix() => {
+                    $(_ if $($variant_type)*::is_valid_prefix(prefix) => {
                         Ok($enum_name::$variant_name(s.parse()?))
                     })*
                     _ => {
@@ -386,7 +398,7 @@ macro_rules! def_id {
                     })?;
 
                 match prefix {
-                    $(_ if prefix == $($variant_type)*::prefix() => {
+                    $(_ if $($variant_type)*::is_valid_prefix(prefix) => {
                         Ok($enum_name::$variant_name(s.parse()?))
                     })*
                     _ => {
@@ -446,6 +458,7 @@ impl std::error::Error for ParseIdError {
 
 def_id!(AccountId, "acct_");
 def_id!(AlipayAccountId, "aliacc_");
+def_id!(ApplicationId, "ca_");
 def_id!(ApplicationFeeId, "fee_");
 def_id!(ApplicationFeeRefundId, "fr_");
 def_id!(BalanceTransactionId, "txn_");
