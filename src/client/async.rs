@@ -1,8 +1,6 @@
 use std::future::Future;
 use std::pin::Pin;
 
-use hyper::client::HttpConnector;
-use hyper::client::connect::dns::GaiResolver;
 use futures_util::future;
 use http::header::{HeaderMap, HeaderName, HeaderValue};
 use http::request::Builder as RequestBuilder;
